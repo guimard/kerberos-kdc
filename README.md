@@ -100,6 +100,45 @@ docker compose exec kdc kadmin.local -q "addprinc -pw testpw alice"
 docker compose exec kdc bash -c 'echo testpw | kinit alice && klist'
 ```
 
+### End-to-end test with LemonLDAP::NG (on-the-fly provisioning)
+
+The compose file also ships an **`llng`** service
+(`yadd/lemonldap-ng-full`) carrying the
+[`krb-provisioning`](https://github.com/linagora/lemonldap-ng-plugins) plugin.
+It demonstrates the whole point of this stack: a user who only exists in the
+general identity directory gets a Kerberos principal **the first time they log
+in through the SSO**, with their key set to the password they just typed.
+
+The portal uses its default **Demo** backend (`dwho/dwho`, `rtyler/rtyler`, …),
+so a login carries a cleartext password the plugin can turn into a Kerberos
+key. Two mounted files wire it up, with the compose file as the single source
+of truth for the values:
+
+- [`examples/llng-krb5.conf`](examples/llng-krb5.conf) — tells `libkadm5` where
+  the KDC is (the AS exchange on `:88` needed before talking to `kadmind:749`).
+- [`examples/llng-cont-init.sh`](examples/llng-cont-init.sh) — at boot, copies
+  the shared provisioner keytab to a portal-private `0600` file and enables the
+  plugin (`updateConf set …`). `KRB_SERVICE_PRINCIPAL` **must** equal the KDC's
+  `KRB5_PROVISIONER_PRINCIPAL`.
+
+```bash
+docker compose up -d --build       # brings up ldap + kdc + llng
+
+# log in once as dwho through the portal, then check the KDC issues tickets:
+#   (the portal is published on http://localhost:8088/, vhost auth.example.com)
+docker compose exec kdc bash -c 'echo dwho | kinit dwho && klist'
+```
+
+A scripted check covering the plugin's acceptance criteria (first-login
+creation, idempotent re-login, key resync, non-blocking when the KDC is down,
+password never logged) is in
+[`tests/krb-provisioning-e2e.sh`](tests/krb-provisioning-e2e.sh):
+
+```bash
+./tests/krb-provisioning-e2e.sh          # leaves the stack up
+./tests/krb-provisioning-e2e.sh --down   # tear everything down at the end
+```
+
 ### First boot — create the realm in LDAP
 
 Set `KRB5_CREATE_REALM=true` (and the `LDAP_ADMIN_*` vars) once, then run:
