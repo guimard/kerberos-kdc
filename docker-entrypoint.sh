@@ -154,9 +154,12 @@ EOF
 # --------------------------------------------------------------------------
 # Render the kadmind ACL file. kadmind refuses to start without it.
 #   - KADM5_ACL (full content) overrides everything if set.
-#   - otherwise: admins (*/admin) get all; an optional provisioner principal
-#     (KRB5_PROVISIONER_PRINCIPAL, e.g. the LemonLDAP::NG service principal)
-#     gets only add/changepw/modify/inquire.
+#   - otherwise: an optional provisioner principal (KRB5_PROVISIONER_PRINCIPAL,
+#     e.g. the LemonLDAP::NG service principal) gets only add/changepw/modify/
+#     inquire, then admins (*/admin) get all.
+# kadm5.acl is FIRST-MATCH-WINS: the restricted line MUST come before the
+# */admin wildcard, otherwise a provisioner named e.g. lemonldap/admin@REALM
+# would match the wildcard and silently get full rights (incl. delete).
 # --------------------------------------------------------------------------
 render_kadm5_acl() {
   local acl="${KDC_DIR}/kadm5.acl"
@@ -165,10 +168,10 @@ render_kadm5_acl() {
     printf '%s\n' "$KADM5_ACL" > "$acl"
   else
     {
-      echo "*/admin@${KRB5_REALM} *"
       if [ -n "${KRB5_PROVISIONER_PRINCIPAL:-}" ]; then
         echo "${KRB5_PROVISIONER_PRINCIPAL} acmi"
       fi
+      echo "*/admin@${KRB5_REALM} *"
     } > "$acl"
   fi
 }
