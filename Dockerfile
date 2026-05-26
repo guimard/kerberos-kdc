@@ -6,9 +6,9 @@
 # <https://www.gnu.org/licenses/>. Distributed WITHOUT ANY WARRANTY.
 FROM debian:trixie-slim
 
-LABEL org.opencontainers.image.title="pure-kdc" \
+LABEL org.opencontainers.image.title="yadd/kdc" \
       org.opencontainers.image.description="MIT Kerberos KDC + kadmind with an external OpenLDAP backend (kldap)" \
-      org.opencontainers.image.source="https://github.com/linagora/pure-kdc"
+      org.opencontainers.image.source="https://github.com/linagora/yadd/kdc"
 
 ARG DEBIAN_FRONTEND=noninteractive
 

@@ -2,7 +2,7 @@
 # Author: Xavier Guimard <xguimard@linagora.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# Full pure-kdc stack: dedicated Kerberos OpenLDAP + MIT KDC.
+# Full yadd/kdc stack: dedicated Kerberos OpenLDAP + MIT KDC.
 #
 # Prototype values are inlined for clarity (matching DNs/passwords between the
 # two services). For real use, move secrets to a .env / Docker secrets, and put
@@ -14,7 +14,7 @@
 services:
   ldap:
     build: ./ldap
-    image: pure-kdc-ldap:latest
+    image: yadd/ldap-krb:latest
     hostname: ldap
     environment:
       LDAP_DOMAIN: example.com
@@ -37,7 +37,7 @@ services:
 
   kdc:
     build: .
-    image: pure-kdc:latest
+    image: yadd/kdc:latest
     hostname: kdc.example.com
     depends_on:
       ldap:

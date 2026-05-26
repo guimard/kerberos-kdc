@@ -6,8 +6,8 @@
 # <https://www.gnu.org/licenses/>. Distributed WITHOUT ANY WARRANTY.
 FROM debian:trixie-slim
 
-LABEL org.opencontainers.image.title="pure-kdc-ldap" \
-      org.opencontainers.image.description="Dedicated OpenLDAP backend for the pure-kdc Kerberos KDC (Kerberos schema preloaded)"
+LABEL org.opencontainers.image.title="yadd/ldap-krb" \
+      org.opencontainers.image.description="Dedicated OpenLDAP backend for the yadd/kdc Kerberos KDC (Kerberos schema preloaded)"
 
 ARG DEBIAN_FRONTEND=noninteractive
 

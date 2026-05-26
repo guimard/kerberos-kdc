@@ -10,7 +10,7 @@
 # later version. It is distributed WITHOUT ANY WARRANTY; see the GNU Affero
 # General Public License <https://www.gnu.org/licenses/> for details.
 #
-# Entrypoint for pure-kdc-ldap: a dedicated OpenLDAP backend for the Kerberos
+# Entrypoint for yadd/ldap-krb: a dedicated OpenLDAP backend for the Kerberos
 # KDC. On first boot it (re)initializes slapd with the requested suffix, loads
 # the MIT Kerberos cn=config schema, creates the two service accounts the KDC
 # binds as, and applies ACLs. Then it runs slapd in the foreground.
@@ -41,10 +41,10 @@ LDAP_KADMIN_DN="${LDAP_KADMIN_DN:-cn=kadmin-service,ou=services,${LDAP_SUFFIX}}"
 : "${LDAP_KADMIN_PASSWORD:?LDAP_KADMIN_PASSWORD is required}"
 
 SCHEMA="/etc/ldap/schema/kerberos.openldap.ldif"
-MARKER="/var/lib/ldap/.pure-kdc-ldap-initialized"
+MARKER="/var/lib/ldap/.yadd/ldap-krb-initialized"
 SLAPD_URLS="${SLAPD_URLS:-ldap:/// ldapi:///}"
 
-log() { echo "[pure-kdc-ldap] $*" >&2; }
+log() { echo "[yadd/ldap-krb] $*" >&2; }
 
 rdn_value() { echo "$1" | sed -E 's/^[a-zA-Z]+=([^,]+),.*/\1/'; }
 

@@ -10,7 +10,7 @@
 # later version. It is distributed WITHOUT ANY WARRANTY; see the GNU Affero
 # General Public License <https://www.gnu.org/licenses/> for details.
 #
-# Entrypoint for the pure-kdc image.
+# Entrypoint for the yadd/kdc image.
 #
 # Renders /etc/krb5.conf and /etc/krb5kdc/kdc.conf from environment variables,
 # stashes the LDAP service-account password(s) and the KDB master key, then
@@ -21,7 +21,7 @@
 #
 set -euo pipefail
 
-log() { echo "[pure-kdc] $*" >&2; }
+log() { echo "[yadd/kdc] $*" >&2; }
 
 DBMODULE="openldap_ldapconf"
 KDC_DIR="/etc/krb5kdc"
@@ -31,7 +31,7 @@ KRB5_CONF="/etc/krb5.conf"
 # --------------------------------------------------------------------------
 # Validate required vars, apply defaults and derive paths.
 # Only called for the service subcommands (run/kdc/kadmin) so that one-off
-# passthrough commands (e.g. `docker run pure-kdc zcat .../kerberos.ldif.gz`,
+# passthrough commands (e.g. `docker run yadd/kdc zcat .../kerberos.ldif.gz`,
 # `docker exec ... kadmin.local`) do not need the full environment.
 # --------------------------------------------------------------------------
 load_config() {

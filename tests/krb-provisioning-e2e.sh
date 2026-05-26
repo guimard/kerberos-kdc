@@ -3,7 +3,7 @@
 # Author: Xavier Guimard <xguimard@linagora.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
-# End-to-end integration test for the whole pure-kdc stack + the
+# End-to-end integration test for the whole yadd/kdc stack + the
 # LemonLDAP::NG krb-provisioning plugin.
 #
 # It drives a *real* portal login (Demo backend, account dwho/dwho) and proves

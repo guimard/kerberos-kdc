@@ -1,4 +1,4 @@
-# pure-kdc
+# yadd/kdc
 
 MIT Kerberos KDC (`krb5kdc`) + admin server (`kadmind`) running in a container,
 with the Kerberos database stored in an **external OpenLDAP** server via the
@@ -36,14 +36,14 @@ container itself is stateless apart from two local stash files.
 
    ```bash
    # Pull the cn=config schema out of the image (decompress on the way out)
-   docker run --rm pure-kdc:latest \
+   docker run --rm yadd/kdc:latest \
      sh -c 'zcat /usr/share/doc/krb5-kdc-ldap/kerberos.openldap.ldif.gz' > kerberos.ldif
 
    # Load it into a running OpenLDAP (run on the LDAP host, as the cn=config admin)
    ldapadd -Y EXTERNAL -H ldapi:/// -f kerberos.ldif
    ```
 
-   > Or just use the **`pure-kdc-ldap`** image (see `ldap/`), which ships this
+   > Or just use the **`yadd/ldap-krb`** image (see `ldap/`), which ships this
    > schema preloaded and creates the KDC service accounts for you.
 
    (On a non-slim OpenLDAP host the very same files are already at
@@ -83,12 +83,12 @@ See `.env.example` for a complete template.
 
 ```bash
 cp .env.example .env        # then edit values
-docker build -t pure-kdc:latest .
+docker build -t yadd/kdc:latest .
 ```
 
 ### Full self-contained stack (KDC + dedicated LDAP)
 
-`docker-compose.yml` wires the **`pure-kdc-ldap`** image (`ldap/`, schema +
+`docker-compose.yml` wires the **`yadd/ldap-krb`** image (`ldap/`, schema +
 service accounts preloaded) together with the KDC. It provisions the realm on
 first boot and is idempotent afterwards:
 
