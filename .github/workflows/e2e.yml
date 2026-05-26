@@ -1,0 +1,46 @@
+# Copyright (C) 2026 LINAGORA <https://linagora.com>
+# Author: Xavier Guimard <xguimard@linagora.com>
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Builds the KDC + dedicated-LDAP images, pulls the LemonLDAP::NG full image
+# (which ships the krb-provisioning plugin) and runs the full end-to-end test:
+# a real portal login must provision the user's Kerberos principal so that
+# kinit succeeds against the KDC.
+name: e2e
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# A new push to a branch/PR cancels the previous, still-running check.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  krb-provisioning-e2e:
+    name: krb-provisioning end-to-end
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # ubuntu-latest already ships Docker Engine + the compose v2 plugin.
+      - name: Versions
+        run: docker version && docker compose version
+
+      # The script does `docker compose up -d --build` itself (building the two
+      # local images and pulling yadd/lemonldap-ng-full), waits for readiness,
+      # then asserts the plugin's acceptance criteria against the KDC.
+      - name: Run end-to-end test
+        run: ./tests/krb-provisioning-e2e.sh
+
+      - name: Dump container logs on failure
+        if: failure()
+        run: docker compose logs --no-color || true
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v || true
