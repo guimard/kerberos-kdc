@@ -41,7 +41,7 @@ LDAP_KADMIN_DN="${LDAP_KADMIN_DN:-cn=kadmin-service,ou=services,${LDAP_SUFFIX}}"
 : "${LDAP_KADMIN_PASSWORD:?LDAP_KADMIN_PASSWORD is required}"
 
 SCHEMA="/etc/ldap/schema/kerberos.openldap.ldif"
-MARKER="/var/lib/ldap/.yadd/ldap-krb-initialized"
+MARKER="/var/lib/ldap/.ldap-krb-initialized"
 SLAPD_URLS="${SLAPD_URLS:-ldap:/// ldapi:///}"
 
 log() { echo "[yadd/ldap-krb] $*" >&2; }
